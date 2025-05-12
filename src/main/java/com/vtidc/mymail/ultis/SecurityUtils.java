@@ -1,0 +1,36 @@
+package com.vtidc.mymail.ultis;
+
+import com.vtidc.mymail.config.security.MyUserDetails;
+import com.vtidc.mymail.entities.User;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+
+import java.util.Optional;
+
+public class SecurityUtils {
+
+    public static Optional<String> getCurrentUserNameLogin() {
+        SecurityContext securityContext = SecurityContextHolder.getContext();
+        return Optional.ofNullable(securityContext.getAuthentication())
+                .map(authentication -> {
+                    if (authentication.getPrincipal() instanceof User userDetails) {
+                        return userDetails.getUsername();
+                    }
+                    return null;
+                });
+    }
+
+    public static Optional<MyUserDetails> getCurrentUserLogin() {
+        SecurityContext securityContext = SecurityContextHolder.getContext();
+        return Optional.ofNullable(securityContext.getAuthentication())
+                .map(authentication -> {
+                    if (authentication.getPrincipal() instanceof MyUserDetails userDetails) {
+                        return userDetails;
+                    }
+                    return null;
+                });
+    }
+
+
+}

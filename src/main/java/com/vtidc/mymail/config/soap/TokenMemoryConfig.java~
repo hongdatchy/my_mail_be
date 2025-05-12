@@ -1,0 +1,21 @@
+package com.vtidc.mymail.config.soap;
+
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+
+@Configuration
+public class TokenMemoryConfig {
+
+    @Bean
+    @Qualifier("admin")
+    public TokenMemory tokenMemoryAdmin() {
+        return new TokenMemory();
+    }
+
+    @Bean
+    @Qualifier("account")
+    public TokenMemory tokenMemoryAccount() {
+        return new TokenMemory();
+    }
+}

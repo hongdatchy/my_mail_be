@@ -1,0 +1,23 @@
+package com.vtidc.mymail.config;
+
+import com.vtidc.mymail.dto.zimbra.AuthResponse;
+import lombok.Getter;
+import org.springframework.stereotype.Service;
+
+@Service
+public class TokenMemory {
+
+    @Getter
+    private String token = null;
+    private Long expirationTime;
+
+    public void saveToken(AuthResponse authResponse) {
+        this.token = authResponse.getAuthToken();
+        this.expirationTime = System.currentTimeMillis() + authResponse.getLifetime();
+    }
+
+    public boolean isTokenExpired() {
+        return System.currentTimeMillis() > expirationTime || token == null;
+    }
+
+}

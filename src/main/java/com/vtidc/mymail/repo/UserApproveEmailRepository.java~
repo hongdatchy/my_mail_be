@@ -1,0 +1,9 @@
+package com.vtidc.mymail.repo;
+
+import com.vtidc.mymail.entities.UserApproveEmail;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
+@Repository
+public interface UserApproveEmailRepository extends JpaRepository<UserApproveEmail, Integer> {
+}

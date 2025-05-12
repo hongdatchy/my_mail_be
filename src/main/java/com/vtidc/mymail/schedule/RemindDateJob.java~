@@ -1,0 +1,26 @@
+package com.vtidc.mymail.schedule;
+
+import org.quartz.Job;
+import org.quartz.JobExecutionContext;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+@Service
+@Transactional
+public class RemindDateJob implements Job {
+
+    public void execute(JobExecutionContext context) {
+        try {
+            System.out.println("aaaaa");
+            String taskId = context.getMergedJobDataMap().get("taskId").toString();
+            Optional<Task> taskOptional = taskRepository.findById(taskId);
+            if (taskOptional.isPresent()) {
+                Task task = taskOptional.get();
+                UserInFoDetails userInFoDetails = objectMapper.readValue(context.getMergedJobDataMap().get("userInFoDetails").toString(), UserInFoDetails.class);
+                notifyCentralClientService.eTaskNotifyRemindDateByAssignUserId(task, userInFoDetails.getId());
+//            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+}

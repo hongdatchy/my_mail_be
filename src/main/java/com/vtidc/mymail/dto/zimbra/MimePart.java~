@@ -1,0 +1,16 @@
+package com.vtidc.mymail.dto.zimbra;
+
+import lombok.Data;
+
+import jakarta.xml.bind.annotation.*;
+
+@Data
+@XmlAccessorType(XmlAccessType.FIELD)
+public class MimePart {
+
+    @XmlAttribute(name = "ct")
+    private String contentType;
+
+    @XmlElement(name = "content")
+    private String content;
+}

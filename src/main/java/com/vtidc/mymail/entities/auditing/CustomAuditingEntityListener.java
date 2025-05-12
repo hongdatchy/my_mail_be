@@ -1,0 +1,48 @@
+package com.vtidc.mymail.entities.auditing;
+
+import com.vtidc.mymail.ultis.SecurityUtils;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.PreUpdate;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.AuditorAware;
+import org.springframework.stereotype.Component;
+
+import java.time.Instant;
+import java.util.Optional;
+
+@Component
+public class CustomAuditingEntityListener {
+
+    @Autowired
+    private AuditorAware<String> auditorAware;
+
+    @PrePersist
+    public void setCreatedBy(Object target) {
+        if (target instanceof AbstractAuditingEntity auditable) {
+            auditorAware.getCurrentAuditor().ifPresent(s -> {
+                Optional<String> emailOptional = SecurityUtils.getCurrentUserNameLogin();
+                if(emailOptional.isPresent()){
+                    auditable.setCreatedBy(emailOptional.get());
+                    auditable.setCreatedDate(Instant.now());
+                }else{
+                    auditable.setCreatedBy("admin");
+                    auditable.setCreatedDate(Instant.now());
+                }
+            });
+        }
+    }
+
+    @PreUpdate
+    public void setUpdatedBy(Object target) {
+        if (target instanceof AbstractAuditingEntity auditable) {
+            auditorAware.getCurrentAuditor().ifPresent(s -> {
+                Optional<String> emailOptional = SecurityUtils.getCurrentUserNameLogin();
+                emailOptional.ifPresent(email -> {
+                    auditable.setUpdatedBy(email);
+                    auditable.setUpdatedDate(Instant.now());
+                });
+            });
+        }
+    }
+}
+

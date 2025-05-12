@@ -1,0 +1,240 @@
+package com.vtidc.mymail.service;
+
+import com.vtidc.mymail.config.enums.TagEntityType;
+import com.vtidc.mymail.dto.EmailDto;
+import com.vtidc.mymail.dto.EmailDtoForZimbra;
+import com.vtidc.mymail.dto.SaveEmailDto;
+import com.vtidc.mymail.dto.SearchAccountRequest;
+import com.vtidc.mymail.dto.zimbra.*;
+import com.vtidc.mymail.entities.Email;
+import com.vtidc.mymail.entities.TagJoin;
+import com.vtidc.mymail.repo.EmailRepository;
+import com.vtidc.mymail.repo.TagJoinRepository;
+import com.vtidc.mymail.ultis.CommonUtils;
+import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+
+@Service
+@AllArgsConstructor
+@Transactional(rollbackFor = Exception.class)
+public class EmailService {
+
+    private final EmailRepository emailRepository;
+
+    private final ZimbraService zimbraService;
+
+    private final TagJoinRepository tagJoinRepository;
+
+    public Email createEmailFromZimbra(EmailDtoForZimbra emailDtoForZimbra) {
+        Email email = new Email();
+        email.setZimbraId(emailDtoForZimbra.getZimbraId());
+        email.setDisplayName(emailDtoForZimbra.getDisplayName());
+        email.setMail(emailDtoForZimbra.getMail());
+        return emailRepository.save(email);
+    }
+
+//    public Email createEmail(SaveEmailDto saveEmailDto) {
+//        if(emailRepository.findByMail(saveEmailDto.getMail()).isPresent()){
+//            throw new RuntimeException("Email đã tồn tại.");
+//        }
+//        CreateAccountRequest createAccountRequest = new CreateAccountRequest();
+//        createAccountRequest.setName(saveEmailDto.getMail());
+//        createAccountRequest.setPassword(saveEmailDto.getPassword());
+//        List<Attr> attrs = new ArrayList<>();
+//        attrs.add(new Attr("zimbraPasswordMustChange", "FALSE"));
+//        attrs.add(new Attr("displayName", saveEmailDto.getDisplayName()));
+//        attrs.add(new Attr("zimbraFeatureAllowUsernameInPassword", "FALSE"));
+//        createAccountRequest.setAttrs(attrs);
+//        CreateAccountResponse createAccountResponse = zimbraService.createEmailAccount(createAccountRequest);
+//        Email email = new Email();
+//
+//        email.setZimbraId(createAccountResponse.getAccount().getId());
+//        email.setDisplayName(saveEmailDto.getDisplayName());
+//        email.setMail(saveEmailDto.getMail());
+//        email.setType(saveEmailDto.getType());
+//        email = emailRepository.save(email);
+//        if(saveEmailDto.getTagIdList() != null){
+//            for (Integer tagId : saveEmailDto.getTagIdList()) {
+//                tagJoinRepository.save(new TagJoin(null, tagId, email.getId(), TagEntityType.email.name()));
+//            }
+//        }
+//        return email;
+//    }
+
+    public Email createEmail(SaveEmailDto saveEmailDto) {
+        if (emailRepository.findByMail(saveEmailDto.getMail()).isPresent()) {
+            throw new RuntimeException("Email đã tồn tại.");
+        }
+
+        CreateAccountRequest request = new CreateAccountRequest();
+        request.setName(saveEmailDto.getMail());
+        request.setPassword(saveEmailDto.getPassword());
+        List<Attr> attrs = new ArrayList<>();
+        attrs.add(new Attr("zimbraPasswordMustChange", "FALSE"));
+        attrs.add(new Attr("displayName", saveEmailDto.getDisplayName()));
+        attrs.add(new Attr("zimbraFeatureAllowUsernameInPassword", "FALSE"));
+        request.setAttrs(attrs);
+
+        CreateAccountResponse response = null;
+
+        try {
+            response = zimbraService.createEmailAccount(request);
+
+            Email email = new Email();
+            email.setZimbraId(response.getAccount().getId());
+            email.setDisplayName(saveEmailDto.getDisplayName());
+            email.setMail(saveEmailDto.getMail());
+            email.setType(saveEmailDto.getType());
+            email.setOrgId(saveEmailDto.getOrgId());
+            email = emailRepository.save(email);
+
+            if (saveEmailDto.getTagIdList() != null) {
+                for (Integer tagId : saveEmailDto.getTagIdList()) {
+                    tagJoinRepository.save(new TagJoin(null, tagId, email.getId(), TagEntityType.email.name()));
+                }
+            }
+
+            return email;
+        } catch (Exception ex) {
+            if (response != null && response.getAccount() != null) {
+                try {
+                    zimbraService.deleteEmailAccount(new DeleteAccountRequest(response.getAccount().getId()));
+                    throw new RuntimeException("Thêm mới k thành công, đã xoá tài khoản trong Zimbra");
+                } catch (Exception deleteEx) {
+                    throw new RuntimeException("Thêm mới k thành công, nhưng vẫn tạo tài khoản trong Zimbra");
+                }
+            }
+            throw new RuntimeException("Thêm mới k thành công");
+        }
+    }
+
+
+    @Transactional(rollbackFor = Exception.class)
+    public Email modifyEmail(SaveEmailDto modifyEmailDto) {
+        if (modifyEmailDto.getId() == null) {
+            throw new RuntimeException("Email không tồn tại.");
+        }
+        Email email;
+        Optional<Email> optionalEmail = emailRepository.findById(modifyEmailDto.getId());
+        if (optionalEmail.isPresent()) {
+            Optional<Email> existingEmail = emailRepository.findByMail(modifyEmailDto.getMail());
+            if (existingEmail.isPresent() && !existingEmail.get().getId().equals(modifyEmailDto.getId())) {
+                throw new RuntimeException("Email đã tồn tại.");
+            }
+
+            email = optionalEmail.get();
+            email.setDisplayName(modifyEmailDto.getDisplayName());
+            email.setMail(modifyEmailDto.getMail());
+            email.setType(modifyEmailDto.getType());
+            email = emailRepository.save(email);
+
+            List<Integer> tagIdListOld = tagJoinRepository.findByEntityIdAndType(email.getId(), TagEntityType.email.name())
+                    .stream().map(TagJoin::getTagId).toList();
+            CommonUtils.DiffResult<Integer> diffResult = CommonUtils.diffLists(
+                    tagIdListOld, modifyEmailDto.getTagIdList(), i -> i);
+
+            for (Integer tagId : diffResult.toDelete) {
+                tagJoinRepository.deleteByEntityIdAndTagIdAndType(email.getId(), tagId, TagEntityType.email.name());
+            }
+
+            for (Integer tagId : diffResult.toAdd) {
+                tagJoinRepository.save(new TagJoin(null, tagId, email.getId(), TagEntityType.email.name()));
+            }
+
+        } else {
+            throw new RuntimeException("Email không tồn tại.");
+        }
+
+        ModifyAccountRequest modifyAccountRequest = new ModifyAccountRequest();
+        modifyAccountRequest.setId(email.getZimbraId());
+
+        List<Attr> attrs = new ArrayList<>();
+        if (modifyEmailDto.getDisplayName() != null) {
+            attrs.add(new Attr("displayName", modifyEmailDto.getDisplayName()));
+        }
+
+        if (modifyEmailDto.getMail() != null) {
+            RenameAccountRequest renameAccountRequest = new RenameAccountRequest();
+            renameAccountRequest.setId(email.getZimbraId());
+            renameAccountRequest.setNewName(modifyEmailDto.getMail());
+            zimbraService.renameEmailAccount(renameAccountRequest);
+        }
+        if(modifyEmailDto.getPassword() != null){
+            if(modifyEmailDto.getOldPassword() == null){
+                throw new RuntimeException("Vui lòng nhập mật cũ");
+            }
+            ChangePasswordRequest changePasswordRequest = new ChangePasswordRequest();
+            changePasswordRequest.setAccount(new AccountSelector("name", modifyEmailDto.getMail()));
+            changePasswordRequest.setOldPassword(modifyEmailDto.getOldPassword());
+            changePasswordRequest.setPassword(modifyEmailDto.getPassword());
+            try {
+                zimbraService.changePasswordEmailAccount(changePasswordRequest);
+            } catch (RuntimeException e){
+                if(e.getMessage().contains("authentication failed")){
+                    throw new RuntimeException("Sai mật khẩu cũ");
+                }else{
+                    throw e;
+                }
+            }
+        }
+
+        modifyAccountRequest.setAttrs(attrs);
+
+        zimbraService.modifyEmailAccount(modifyAccountRequest);
+
+        return email;
+
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    public boolean deleteEmail(Integer id) {
+        Optional<Email> optionalEmail = emailRepository.findById(id);
+        if (optionalEmail.isPresent()) {
+            Email email = optionalEmail.get();
+            emailRepository.deleteById(email.getId());
+            tagJoinRepository.deleteByEntityIdAndType(email.getId(), TagEntityType.email.name());
+            zimbraService.deleteEmailAccount(new DeleteAccountRequest(email.getZimbraId()));
+            return true;
+        }
+        return false;
+    }
+
+    public Page<Email> search(SearchAccountRequest searchAccountRequest) {
+        String keyword = searchAccountRequest.getKeyword();
+        String type = searchAccountRequest.getType();
+        Integer tagId = searchAccountRequest.getTagId();
+        int page = searchAccountRequest.getPage();
+        int size = searchAccountRequest.getSize();
+        Sort sort = Sort.unsorted();
+        if (searchAccountRequest.getSortAscending() != null && searchAccountRequest.getSortBy() != null) {
+            Sort.Direction direction = Sort.Direction.fromString(searchAccountRequest.getSortAscending());
+            sort = Sort.by(direction, searchAccountRequest.getSortBy());
+        }
+
+        if (keyword != null &&keyword.matches(".*[+\\-@~<>*()\"].*")) {
+            keyword = "\"" + keyword + "\"";
+        }
+        Pageable pageable = PageRequest.of(page, size, sort);
+        if(keyword == null || keyword.length() <= 2){
+            if(tagId == null){
+                return emailRepository.findByType(type, pageable);
+            }else {
+                return emailRepository.findByTypeAndTagId(TagEntityType.email.name(), type, tagId, pageable);
+            }
+        }
+
+        if(tagId == null){
+            return emailRepository.fullTextSearch(keyword, type, pageable);
+        }
+        return emailRepository.fullTextSearch(TagEntityType.email.name(), keyword, type, tagId, pageable);
+    }
+}

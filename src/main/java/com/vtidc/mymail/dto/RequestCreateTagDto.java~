@@ -1,0 +1,2 @@
+package com.vtidc.mymail.dto;public class RequestCreateTagDto {
+}

@@ -1,0 +1,21 @@
+package com.vtidc.mymail.dto;
+
+import jakarta.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@XmlRootElement
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+public class AuthRequest {
+
+    @XmlElement
+    private String name;
+
+    @XmlElement
+    private String password;
+}
+

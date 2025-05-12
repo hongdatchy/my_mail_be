@@ -1,0 +1,28 @@
+package com.vtidc.mymail.entities;
+
+import com.vtidc.mymail.entities.auditing.AbstractAuditingEntity;
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+@Getter
+@Setter
+@Entity
+@Table(name = "mail_distribution_list")
+@NoArgsConstructor
+@AllArgsConstructor
+public class MailDistributionList extends AbstractAuditingEntity {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id", nullable = false)
+    private Integer id;
+
+    @Column(name = "distribution_list_id")
+    private Integer distributionListId;
+
+    @Column(name = "email_id")
+    private Integer emailId;
+
+}

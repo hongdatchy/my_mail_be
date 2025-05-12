@@ -1,0 +1,22 @@
+package com.vtidc.mymail.dto.zimbra;
+
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlElement;
+import lombok.Data;
+
+import java.util.List;
+
+@Data
+@XmlAccessorType(XmlAccessType.FIELD)
+public class Message {
+
+    @XmlElement(name = "e")
+    private List<EmailAddress> emailAddrs;
+
+    @XmlElement(name = "su")
+    private String subject;
+
+    @XmlElement(name = "mp")
+    private MimePart mimePart;
+}

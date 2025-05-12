@@ -1,0 +1,36 @@
+package com.vtidc.mymail.schedule;
+
+import com.vtidc.mymail.config.enums.StatusFlowEmailType;
+import com.vtidc.mymail.entities.FlowEmail;
+import com.vtidc.mymail.repo.FlowEmailRepository;
+import com.vtidc.mymail.service.FlowEmailService;
+import jakarta.annotation.PostConstruct;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+
+@Service
+public class InnitJob {
+
+    @Autowired
+    private FlowEmailRepository flowEmailRepository;
+
+    @Autowired
+    private FlowEmailService flowEmailService;
+
+    @Autowired
+    private QuartzService quartzService;
+
+
+    @PostConstruct
+    public void init() {
+
+        //load từ db và gọi createJob(String taskId) nhiều lần
+        List<FlowEmail> flowEmails = flowEmailRepository.findByStatus(StatusFlowEmailType.scheduled.name());
+        for (FlowEmail flowEmail : flowEmails) {
+            quartzService.sendMailLater(flowEmailService.getFlowEmail(flowEmail.getId()));
+        }
+    }
+
+}

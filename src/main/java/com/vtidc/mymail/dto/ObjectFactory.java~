@@ -1,0 +1,25 @@
+package com.vtidc.mymail;
+
+import com.vtidc.mymail.dto.AuthRequest;
+import com.vtidc.mymail.dto.AuthResponse;
+import jakarta.xml.bind.JAXBElement;
+import jakarta.xml.bind.annotation.XmlElementDecl;
+import jakarta.xml.bind.annotation.XmlRegistry;
+
+import javax.xml.namespace.QName;
+
+@XmlRegistry
+public class ObjectFactory {
+
+    // Tạo phương thức cho AuthRequest
+    @XmlElementDecl(namespace = "urn:zimbraAdmin", name = "AuthRequest")
+    public JAXBElement<AuthRequest> createAuthRequest(AuthRequest value) {
+        return new JAXBElement<>(new QName("urn:zimbraAdmin", "AuthRequest"), AuthRequest.class, null, value);
+    }
+
+    // Tạo phương thức cho AuthResponse
+    @XmlElementDecl(namespace = "urn:zimbraAdmin", name = "AuthResponse")
+    public JAXBElement<AuthResponse> createAuthResponse(AuthResponse value) {
+        return new JAXBElement<>(new QName("urn:zimbraAdmin", "AuthResponse"), AuthResponse.class, null, value);
+    }
+}

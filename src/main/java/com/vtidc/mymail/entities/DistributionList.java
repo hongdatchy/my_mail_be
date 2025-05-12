@@ -1,0 +1,35 @@
+package com.vtidc.mymail.entities;
+
+import com.vtidc.mymail.entities.auditing.AbstractAuditingEntity;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.Size;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+@Getter
+@Setter
+@Entity
+@Table(name = "distribution_list")
+@NoArgsConstructor
+@AllArgsConstructor
+public class DistributionList extends AbstractAuditingEntity {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id", nullable = false)
+    private Integer id;
+
+    @Size(max = 50)
+    @Column(name = "zimbra_id", length = 50)
+    private String zimbraId;
+
+    @Size(max = 120)
+    @Column(name = "display_name", length = 120)
+    private String displayName;
+
+    @Size(max = 120)
+    @Column(name = "mail", length = 120)
+    private String mail;
+
+}

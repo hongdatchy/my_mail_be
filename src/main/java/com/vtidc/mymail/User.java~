@@ -1,0 +1,37 @@
+//package com.vtidc.mymail;
+//
+//import jakarta.persistence.*;
+//import lombok.AllArgsConstructor;
+//import lombok.Data;
+//import lombok.NoArgsConstructor;
+//
+//import java.io.Serializable;
+//import java.util.Date;
+//
+//@Data
+//@Entity
+//@Table(name = "user")
+//@NoArgsConstructor
+//@AllArgsConstructor
+//public class User implements Serializable {
+//
+//    private static final long serialVersionUID = 1L;
+//
+//    @Id
+//    @Column(name = "id", nullable = false)
+//    @GeneratedValue(strategy = GenerationType.IDENTITY)
+//    private Integer id;
+//
+//    @Column(name = "username")
+//    private String username;
+//
+//    @Column(name = "password")
+//    private String password;
+//
+//    @Column(name = "email")
+//    private String email;
+//
+//    @Column(name = "last_modified_date")
+//    private Date lastModifiedDate;
+//
+//}

@@ -1,0 +1,4 @@
+package com.vtidc.mymail.schedule;
+
+public class SampleJob {
+}

@@ -1,0 +1,22 @@
+package com.vtidc.mymail.dto.zimbra;
+
+import jakarta.xml.bind.annotation.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import java.util.List;
+
+@XmlRootElement(name = "ModifyDistributionListRequest", namespace = "urn:zimbraAdmin")
+@NoArgsConstructor
+@AllArgsConstructor
+@Data
+@XmlAccessorType(XmlAccessType.FIELD)
+public class ModifyDistributionListRequest {
+
+    @XmlElement(name = "id")
+    private String id;
+
+    @XmlElement(name = "a", namespace = "urn:zimbraAdmin")
+    private List<Attr> attributes;
+}

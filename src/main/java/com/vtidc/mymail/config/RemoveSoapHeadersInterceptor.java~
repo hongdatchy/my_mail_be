@@ -1,0 +1,53 @@
+package com.vtidc.mymail.config;
+
+import org.apache.http.*;
+import org.apache.http.protocol.HttpContext;
+import org.apache.http.util.EntityUtils;
+
+import java.io.IOException;
+
+public class RemoveSoapHeadersInterceptor implements HttpRequestInterceptor {
+    @Override
+    public void process(HttpRequest request, HttpContext context) {
+        // Xóa Content-Length nếu có
+        if (request.containsHeader("Content-Length")) {
+            request.removeHeaders("Content-Length");
+        }
+        request.setHeader("Content-Type", "application/soap+xml");
+//        try {
+//            StringBuilder curl = new StringBuilder("curl");
+//
+//            // Method
+//            String method = request.getRequestLine().getMethod();
+//            curl.append(" -X ").append(method);
+//
+//            // URL
+//            String uri = request.getRequestLine().getUri();
+//            curl.append(" '").append(uri).append("'");
+//
+//            // Headers
+//            for (Header header : request.getAllHeaders()) {
+//                curl.append(" \\\n  -H '").append(header.getName()).append(": ").append(header.getValue()).append("'");
+//            }
+//
+//            // Nếu có body (POST/PUT)
+//            if (request instanceof HttpEntityEnclosingRequest reqWithBody) {
+//                HttpEntity entity = reqWithBody.getEntity();
+//                if (entity != null) {
+//                    String body = EntityUtils.toString(entity);
+//                    curl.append(" \\\n  --data-raw '").append(body.replace("'", "'\"'\"'")).append("'");
+//                }
+//            }
+//
+//            System.out.println("====== CURL DEBUG ======");
+//            System.out.println(curl);
+//            System.out.println("========================");
+//
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+    }
+
+
+}
+

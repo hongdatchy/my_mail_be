@@ -1,0 +1,71 @@
+package com.vtidc.mymail.config;
+
+import com.vtidc.mymail.dto.GetAllAccountsRequest;
+import com.vtidc.mymail.dto.zimbra.AuthRequest;
+import com.vtidc.mymail.dto.zimbra.AuthResponse;
+import com.vtidc.mymail.dto.zimbra.GetAllAccountsResponse;
+import jakarta.xml.soap.MessageFactory;
+import jakarta.xml.soap.SOAPException;
+import org.apache.http.client.HttpClient;
+import org.apache.http.conn.ssl.NoopHostnameVerifier;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.ssl.SSLContextBuilder;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.oxm.jaxb.Jaxb2Marshaller;
+import org.springframework.ws.client.core.WebServiceTemplate;
+import org.springframework.ws.client.support.interceptor.ClientInterceptor;
+import org.springframework.ws.soap.saaj.SaajSoapMessageFactory;
+import org.springframework.ws.transport.http.HttpComponentsMessageSender;
+
+import java.security.KeyManagementException;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+
+@Configuration
+public class SoapConfig {
+
+    @Autowired
+    SecurityInterceptorService securityInterceptorService;
+
+    @Bean
+    public WebServiceTemplate webServiceTemplate(final Jaxb2Marshaller marshaller) throws NoSuchAlgorithmException, KeyStoreException, KeyManagementException, SOAPException {
+        HttpClient client = HttpClients.custom()
+                .addInterceptorFirst(new RemoveSoapHeadersInterceptor())
+                .setSSLHostnameVerifier(NoopHostnameVerifier.INSTANCE)
+                .setSSLContext(new SSLContextBuilder()
+                        .loadTrustMaterial(null, (chain, authType) -> true)
+                        .build())
+                .build();
+
+        SaajSoapMessageFactory messageFactory = new SaajSoapMessageFactory();
+        messageFactory.afterPropertiesSet();
+
+        WebServiceTemplate webServiceTemplate = new WebServiceTemplate(messageFactory);
+        webServiceTemplate.setMarshaller(marshaller);
+        webServiceTemplate.setUnmarshaller(marshaller);
+        webServiceTemplate.setInterceptors(new ClientInterceptor[]{
+                securityInterceptorService,
+                new SoapLoggerInterceptor(),
+        });
+        // Tạo HTTP client để thêm headers (Cookie và Content-Type)
+        HttpComponentsMessageSender messageSender = new HttpComponentsMessageSender(client);
+
+        webServiceTemplate.setMessageSender(messageSender);
+        return webServiceTemplate;
+    }
+
+    @Bean
+    public Jaxb2Marshaller marshaller() {
+        Jaxb2Marshaller marshaller = new Jaxb2Marshaller();
+        marshaller.setClassesToBeBound(
+                AuthRequest.class,
+                AuthResponse.class,
+                GetAllAccountsRequest.class,
+                GetAllAccountsResponse.class
+                );
+//        marshaller.setMarshallerProperties(Collections.singletonMap(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE));
+        return marshaller;
+    }
+}

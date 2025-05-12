@@ -1,0 +1,88 @@
+package com.vtidc.mymail.ultis;
+
+import java.util.AbstractMap;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+
+public class CommonUtils {
+
+    public static Integer extractTagId(String value) {
+        if (value != null && value.contains("tagId:")) {
+            String[] parts = value.split("tagId:");
+            if (parts.length > 1) {
+                String tagIdStr = parts[1].split(";")[0].trim();
+                if (tagIdStr.matches("\\d+")) {
+                    return Integer.valueOf(tagIdStr);
+                }
+            }
+        }
+        return null;
+    }
+
+    public static class DiffResult<T> {
+        public List<T> toAdd;
+        public List<T> toUpdate;
+        public List<T> toDelete;
+
+        public DiffResult(List<T> toAdd, List<T> toUpdate, List<T> toDelete) {
+            this.toAdd = toAdd;
+            this.toUpdate = toUpdate;
+            this.toDelete = toDelete;
+        }
+    }
+
+    public static <T, ID> DiffResult<T> diffLists(
+            List<T> oldList,
+            List<T> newList,
+            Function<T, ID> idGetter
+    ) {
+        if (oldList == null && newList == null) {
+            return new DiffResult<>(new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
+        }
+
+        // Nếu oldList là null, tất cả các đối tượng trong newList là cần thêm
+        if (oldList == null) {
+            return new DiffResult<>(newList, new ArrayList<>(), new ArrayList<>());
+        }
+
+        // Nếu newList là null, tất cả các đối tượng trong oldList là cần xoá
+        if (newList == null) {
+            return new DiffResult<>(new ArrayList<>(), new ArrayList<>(), oldList);
+        }
+        Map<ID, T> oldMap = oldList.stream()
+                .map(e -> new AbstractMap.SimpleEntry<>(idGetter.apply(e), e))
+                .filter(e -> e.getKey() != null)
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+
+        Map<ID, T> newMap = newList.stream()
+                .map(e -> new AbstractMap.SimpleEntry<>(idGetter.apply(e), e))
+                .filter(e -> e.getKey() != null)
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+
+        // Những đối tượng mới cần thêm vào
+        List<T> toAdd = newList.stream()
+                .filter(e -> idGetter.apply(e) == null || !oldMap.containsKey(idGetter.apply(e)))
+                .collect(Collectors.toList());
+
+        // Những đối tượng cần cập nhật (đối tượng có trong oldList và newList nhưng có sự thay đổi)
+        List<T> toUpdate = newList.stream()
+                .filter(e -> {
+                    ID id = idGetter.apply(e);
+                    return id != null && oldMap.containsKey(id); // Đã có trong oldList
+                })
+                .collect(Collectors.toList());
+
+        // Những đối tượng cần xoá (có trong oldList nhưng không có trong newList)
+        List<T> toDelete = oldList.stream()
+                .filter(e -> {
+                    ID id = idGetter.apply(e);
+                    return id != null && !newMap.containsKey(id); // Không có trong newList
+                })
+                .collect(Collectors.toList());
+
+        return new DiffResult<>(toAdd, toUpdate, toDelete);
+    }
+}

@@ -1,0 +1,50 @@
+package com.vtidc.mymail.dto.zimbra;
+
+import jakarta.xml.bind.annotation.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import java.util.List;
+
+@XmlRootElement(name = "GetAllAccountsResponse", namespace = "urn:zimbraAdmin")
+@XmlAccessorType(XmlAccessType.FIELD)
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+public class GetAllAccountsResponse {
+
+    @XmlElement(name = "account", namespace = "urn:zimbraAdmin")
+    private List<Account> account;
+
+//    @XmlAccessorType(XmlAccessType.FIELD)
+//    @Data
+//    @NoArgsConstructor
+//    @AllArgsConstructor
+//    public static class Account {
+//
+//        @XmlAttribute(name = "name")
+//        private String email;
+//
+//        @XmlElement(name = "a", namespace = "urn:zimbraAdmin")
+//        private List<Attr> attrs;
+//
+//        private String displayName;
+//
+//
+//    }
+//
+//    @XmlAccessorType(XmlAccessType.FIELD)
+//    @Data
+//    @NoArgsConstructor
+//    @AllArgsConstructor
+//    public static class Attr {
+//
+//        @XmlAttribute(name = "n")
+//        private String name;
+//
+//        @XmlValue
+//        private String value;
+//    }
+
+}

@@ -1,0 +1,42 @@
+package com.vtidc.mymail.controller;
+
+import com.vtidc.mymail.dto.SaveFlowEmailDto;
+import com.vtidc.mymail.dto.search.SearchFlowEmailRequest;
+import com.vtidc.mymail.dto.validate.OnCreate;
+import com.vtidc.mymail.service.FlowEmailService;
+import jakarta.validation.groups.Default;
+import lombok.AllArgsConstructor;
+import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
+
+@RestController
+@RequestMapping("/api/flow-email")
+@AllArgsConstructor
+public class FlowEmailController {
+
+    private final FlowEmailService flowEmailService;
+
+
+    @GetMapping("/{id}")
+    public ResponseEntity<Object> getFlowEmail(@PathVariable Integer id) {
+        return ResponseEntity.ok(flowEmailService.getFlowEmail(id));
+    }
+
+    @PostMapping
+    public ResponseEntity<Object> crateFlowEmail(@Validated({Default.class, OnCreate.class}) @RequestBody SaveFlowEmailDto saveFlowEmailDto) {
+        flowEmailService.createFlowEmail(saveFlowEmailDto);
+        return ResponseEntity.ok(new SaveFlowEmailDto());
+    }
+
+    @PostMapping("/search")
+    public ResponseEntity<Object> searchFlowEmail(@Validated @RequestBody SearchFlowEmailRequest searchFlowEmailRequest) {
+        return ResponseEntity.ok(flowEmailService.search(searchFlowEmailRequest));
+    }
+
+    @PostMapping("/approve/{id}")
+    public ResponseEntity<Object> approveFlowEmail(@PathVariable Integer id) {
+        flowEmailService.approveFlowEmail(id);
+        return ResponseEntity.ok(new SaveFlowEmailDto());
+    }
+}

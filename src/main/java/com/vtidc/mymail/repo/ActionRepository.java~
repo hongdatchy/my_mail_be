@@ -1,0 +1,4 @@
+package com.vtidc.mymail.repo;
+
+public interface ActionRepository extends org.springframework.data.jpa.repository.JpaRepository<com.vtidc.mymail.entities.Action, java.lang.Integer> {
+  }

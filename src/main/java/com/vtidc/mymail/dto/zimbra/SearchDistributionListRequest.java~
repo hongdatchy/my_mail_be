@@ -1,0 +1,21 @@
+package com.vtidc.mymail.dto.zimbra;
+
+import com.vtidc.mymail.config.enums.UserType;
+import com.vtidc.mymail.dto.validate.ValueOfEnum;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+public class SearchDistributionListRequest {
+    private String keyword;
+    private String sortBy;
+    private String sortAscending;
+    private Integer tagId;
+    private Integer page;
+    private Integer size;
+
+}
+

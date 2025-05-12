@@ -1,0 +1,26 @@
+package com.vtidc.mymail.dto;
+
+import com.vtidc.mymail.dto.validate.OnUpdate;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
+
+import java.time.Instant;
+import java.util.List;
+
+public class FlowEmailDto {
+
+    private Integer id;
+
+    private String name;
+
+    private List<Integer> tagIdList;
+
+    private Instant startDate;
+
+    private Boolean startNow;
+
+    private String content;
+
+    private String status;
+
+}

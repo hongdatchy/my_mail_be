@@ -1,0 +1,4 @@
+package com.vtidc.mymail.dto.zimbra;
+
+public class GetAllUserRequest {
+}

@@ -1,0 +1,61 @@
+package com.vtidc.mymail;
+
+import com.vtidc.mymail.dto.zimbra.SearchDirectoryResponse;
+//import com.vtidc.mymail.schedule.QuartzService;
+import jakarta.xml.bind.JAXBContext;
+import jakarta.xml.bind.JAXBException;
+import jakarta.xml.bind.Unmarshaller;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.CommandLineRunner;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+import java.io.StringReader;
+
+@SpringBootApplication
+public class MyMailApplication implements CommandLineRunner {
+
+    public static SearchDirectoryResponse unmarshalResponse(String xmlResponse) throws JAXBException {
+        // Tạo một JAXBContext cho lớp GetAllAccountsResponse
+        JAXBContext jaxbContext = JAXBContext.newInstance(SearchDirectoryResponse.class);
+
+        // Tạo Unmarshaller
+        Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
+
+        // Unmarshal XML string vào đối tượng GetAllAccountsResponse
+        StringReader reader = new StringReader(xmlResponse);
+
+        return (SearchDirectoryResponse) unmarshaller.unmarshal(reader);
+    }
+
+    public static void main(String[] args) {
+        SpringApplication.run(MyMailApplication.class, args);
+    }
+
+//    @Autowired
+//    QuartzService quartzService;
+
+    @Override
+    public void run(String... args) throws Exception {
+//        quartzService.createJob("111");
+//        String xml = "<SearchDirectoryResponse searchTotal=\"24\" more=\"1\" xmlns=\"urn:zimbraAdmin\">" +
+//                "<account isExternal=\"1\" name=\"dat20@example.com\" id=\"7c6a2ca0-a1ac-45cd-b3e9-a0e4c91b255d\">\n" +
+//                "                <a n=\"uid\">dat20</a>\n" +
+//                "                <a n=\"zimbraAccountStatus\">active</a>\n" +
+//                "                <a n=\"displayName\">pham H. dat</a>\n" +
+//                "                <a n=\"zimbraId\">7c6a2ca0-a1ac-45cd-b3e9-a0e4c91b255d</a>\n" +
+//                "                <a n=\"description\">type:user;tagId:111;</a>\n" +
+//                "                <a n=\"cn\">pham H. dat</a>\n" +
+//                "                <a n=\"zimbraMailStatus\">enabled</a>\n" +
+//                "            </account>" +
+//                "</SearchDirectoryResponse>";
+//
+//        try {
+//            SearchDirectoryResponse response = unmarshalResponse(xml);
+//            // In các tài khoản đã được ánh xạ
+//            System.out.println(response);
+//        } catch (JAXBException e) {
+//            e.printStackTrace();
+//        }
+    }
+}

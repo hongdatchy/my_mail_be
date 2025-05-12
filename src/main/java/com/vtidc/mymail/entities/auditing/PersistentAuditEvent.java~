@@ -1,0 +1,2 @@
+package com.vtidc.mymail.entities.auditing;public class PersistentAuditEvent {
+}

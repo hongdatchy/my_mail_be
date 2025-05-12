@@ -1,0 +1,6 @@
+package com.vtidc.mymail.config.enums;
+
+public enum EmailType {
+    user, distribution_list
+}
+

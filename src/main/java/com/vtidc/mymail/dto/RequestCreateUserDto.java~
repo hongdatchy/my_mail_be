@@ -1,0 +1,37 @@
+package com.vtidc.mymail.dto;
+
+import com.vtidc.mymail.dto.validate.OnCreate;
+import com.vtidc.mymail.dto.validate.OnUpdate;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import java.util.List;
+
+@NoArgsConstructor
+@AllArgsConstructor
+@Data
+public class RequestCreateUserDto {
+
+    @NotNull(message = "không được trống", groups = {OnUpdate.class})
+    private Integer id;
+
+    @NotEmpty(message = "không được trống")
+    private String username;
+
+    @NotEmpty(message = "không được trống", groups = {OnCreate.class})
+    private String password;
+
+    @NotEmpty(message = "không được trống")
+    private String email;
+
+    @NotNull(message = "không được trống")
+    private Integer orgId;
+
+    private List<Integer> tagIdList;
+
+    private List<RequestRoleDto> requestRoleDtoList;
+
+}

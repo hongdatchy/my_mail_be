@@ -1,0 +1,11 @@
+package com.vtidc.mymail.repo.projection;
+
+import java.time.Instant;
+
+public interface BaseAuditProjection {
+    String getCreatedBy();
+    Instant getCreatedDate();
+    String getUpdatedBy();
+    Instant getUpdatedDate();
+}
+

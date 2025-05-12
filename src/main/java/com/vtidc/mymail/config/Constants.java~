@@ -1,0 +1,10 @@
+package com.vtidc.mymail.config;
+
+public class Constants {
+
+    public static final String SYSTEM_ACCOUNT = "system";
+
+    public static final Integer ZIMBRA_SORT_ASC = 1;
+    public static final Integer ZIMBRA_SORT_DESC = 0;
+
+}

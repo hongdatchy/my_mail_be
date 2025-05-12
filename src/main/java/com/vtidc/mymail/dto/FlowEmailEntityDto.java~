@@ -1,0 +1,26 @@
+package com.vtidc.mymail.dto;
+
+import com.vtidc.mymail.config.enums.EmailType;
+import com.vtidc.mymail.dto.validate.ValueOfEnum;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@NoArgsConstructor
+@AllArgsConstructor
+@Data
+public class FlowEmailEntityDto {
+
+    @NotNull(message = "không được trống")
+    private Integer entityId;
+
+    @NotNull
+    @NotEmpty(message = "không được trống")
+    private String email;
+
+    @ValueOfEnum(enumClass = EmailType.class)
+    private String type;
+
+}

@@ -1,0 +1,82 @@
+package com.vtidc.mymail.controller;
+
+import com.vtidc.mymail.config.security.TokenProvider;
+import com.vtidc.mymail.dto.SaveUserDto;
+import com.vtidc.mymail.dto.search.SearchUserRequest;
+import com.vtidc.mymail.dto.validate.OnCreate;
+import com.vtidc.mymail.dto.validate.OnUpdate;
+import com.vtidc.mymail.entities.User;
+import com.vtidc.mymail.service.UserService;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.groups.Default;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
+
+@RestController
+@RequestMapping("/api/user")
+@RequiredArgsConstructor
+public class UserController {
+
+    private final AuthenticationManager authenticationManager;
+
+    private final TokenProvider tokenProvider;
+
+    private final UserService userService;
+
+    public static final String JWT = "jwt";
+
+    @Value("${timeExpirationToken}")
+    private long EXPIRED;
+
+    @PostMapping("/login")
+    public ResponseEntity<Object> login(@RequestBody User user, HttpServletRequest request,
+                                        HttpServletResponse response) {
+        UsernamePasswordAuthenticationToken authenticationToken =
+                new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword());
+        Authentication authentication = authenticationManager
+                .authenticate(authenticationToken);
+        String token = tokenProvider.createToken(authentication);
+        Cookie cookie = new Cookie(JWT, token);
+        cookie.setHttpOnly(true);
+        cookie.setMaxAge((int) EXPIRED/1000);
+        cookie.setSecure(false);
+//        if(!System.getProperty("os.name").contains("Windows")){
+//            cookie.setDomain(domain);
+//        }
+        cookie.setPath("/");
+        response.addCookie(cookie);
+        return ResponseEntity.ok(token);
+    }
+
+    @PostMapping
+    public ResponseEntity<Object> createUser(@Validated({Default.class, OnCreate.class}) @RequestBody SaveUserDto requestCreateUserDto) {
+        return ResponseEntity.ok(userService.createUser(requestCreateUserDto));
+    }
+
+    @PutMapping
+    public ResponseEntity<Object> editUser(@Validated({Default.class, OnUpdate.class}) @RequestBody SaveUserDto requestUpdateUserDto) {
+        return ResponseEntity.ok(userService.updateUser(requestUpdateUserDto));
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<Object> getDetailUser(@PathVariable Integer id) {
+        SaveUserDto saveUserDto = userService.getUserDetail(id);
+        saveUserDto.setPassword(null);
+        return ResponseEntity.ok(saveUserDto);
+    }
+
+    @PostMapping("/search")
+    public ResponseEntity<Object> search(@RequestBody SearchUserRequest searchUserRequest) {
+        Object searchAccountsResponse = userService.search(searchUserRequest);
+        return ResponseEntity.ok(searchAccountsResponse);
+    }
+
+}

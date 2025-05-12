@@ -1,0 +1,343 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
+
+    <!-- Tạo bảng user -->
+    <changeSet id="001-create-user-table" author="you">
+        <createTable tableName="user">
+            <column name="id" type="INT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false" />
+            </column>
+            <column name="username" type="VARCHAR(120)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="password" type="VARCHAR(120)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="mail" type="VARCHAR(120)"/>
+            <column name="org_id" type="VARCHAR(120)"/>
+            <column name="last_modified_date" type="DATETIME"/>
+            <column name="created_by" type="VARCHAR(120)"/>
+            <column name="created_date" type="DATETIME"/>
+            <column name="updated_by" type="VARCHAR(120)"/>
+            <column name="updated_date" type="DATETIME"/>
+        </createTable>
+        <addUniqueConstraint tableName="user" columnNames="id" constraintName="id_UNIQUE"/>
+    </changeSet>
+
+    <!-- Tạo bảng role -->
+    <changeSet id="002-create-role-table" author="you">
+        <createTable tableName="role">
+            <column name="id" type="INT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="code" type="VARCHAR(50)"/>
+            <column name="name" type="VARCHAR(120)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_by" type="VARCHAR(120)"/>
+            <column name="created_date" type="DATETIME"/>
+            <column name="updated_by" type="VARCHAR(120)"/>
+            <column name="updated_date" type="DATETIME"/>
+        </createTable>
+    </changeSet>
+
+    <!-- Tạo bảng action -->
+    <changeSet id="003-create-action-table" author="you">
+        <createTable tableName="action">
+            <column name="id" type="INT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="name" type="VARCHAR(120)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="code" type="VARCHAR(50)"/>
+            <column name="created_by" type="VARCHAR(120)"/>
+            <column name="created_date" type="DATETIME"/>
+            <column name="updated_by" type="VARCHAR(120)"/>
+            <column name="updated_date" type="DATETIME"/>
+        </createTable>
+    </changeSet>
+
+    <!-- Tạo bảng organization -->
+    <changeSet id="004-create-org-table" author="you">
+        <createTable tableName="organization">
+            <column name="id" type="INT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="name" type="VARCHAR(120)"/>
+            <column name="mail" type="VARCHAR(120)"/>
+
+            <column name="trade_name" type="VARCHAR(255)"/> <!-- Tên giao dịch -->
+            <column name="company_type" type="VARCHAR(255)"/> <!-- Loại hình hoạt động -->
+            <column name="tax_code" type="VARCHAR(20)"/> <!-- Mã số thuế -->
+            <column name="address" type="VARCHAR(500)"/> <!-- Địa chỉ -->
+            <column name="legal_representative" type="VARCHAR(255)"/> <!-- Đại diện pháp luật -->
+            <column name="license_issued_date" type="DATE"/> <!-- Ngày cấp giấy phép -->
+            <column name="operation_start_date" type="DATE"/> <!-- Ngày hoạt động -->
+            <column name="phone_number" type="VARCHAR(20)"/> <!-- Điện thoại trụ sở -->
+            <column name="license_file" type="VARCHAR(255)"/> <!-- Tên file giấy phép đính kèm -->
+
+
+            <column name="created_by" type="VARCHAR(120)"/>
+            <column name="created_date" type="DATETIME"/>
+            <column name="updated_by" type="VARCHAR(120)"/>
+            <column name="updated_date" type="DATETIME"/>
+            <column name="status" type="VARCHAR(120)"/>
+        </createTable>
+    </changeSet>
+
+
+    <!-- Tạo bảng user_approve_email (cho duyệt email tổ chức)-->
+    <changeSet id="005-create-user-approve-email-table" author="you">
+        <createTable tableName="user_approve_email">
+            <column name="id" type="INT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="id_user_send" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="id_user_approve" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_by" type="VARCHAR(120)"/>
+            <column name="created_date" type="DATETIME"/>
+            <column name="updated_by" type="VARCHAR(120)"/>
+            <column name="updated_date" type="DATETIME"/>
+        </createTable>
+    </changeSet>
+
+    <!-- Tạo bảng user_config -->
+    <changeSet id="006-create-user-config-table" author="you">
+        <createTable tableName="user_config">
+            <column name="id" type="INT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="user_id" type="INT"/>
+            <column name="role_id" type="INT"/>
+            <column name="action_id" type="INT"/>
+            <column name="config_data" type="JSON"/>
+            <column name="created_by" type="VARCHAR(120)"/>
+            <column name="created_date" type="DATETIME"/>
+            <column name="updated_by" type="VARCHAR(120)"/>
+            <column name="updated_date" type="DATETIME"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="007-insert-roles" author="you">
+        <insert tableName="role">
+            <column name="name" value="Danh sách email"/>
+        </insert>
+        <insert tableName="role">
+            <column name="name" value="Nhóm email"/>
+        </insert>
+        <insert tableName="role">
+            <column name="name" value="Quản lý tài khoản"/>
+        </insert>
+        <insert tableName="role">
+            <column name="name" value="Quản lý email tổ chức"/>
+        </insert>
+    </changeSet>
+
+    <!-- Insert dữ liệu mẫu cho bảng action -->
+    <changeSet id="008-insert-actions" author="you">
+        <insert tableName="action">
+            <column name="name" value="Tạo"/>
+        </insert>
+        <insert tableName="action">
+            <column name="name" value="Xem"/>
+        </insert>
+        <insert tableName="action">
+            <column name="name" value="Chỉnh sửa"/>
+        </insert>
+        <insert tableName="action">
+            <column name="name" value="Xoá"/>
+        </insert>
+    </changeSet>
+
+
+    <!-- Tạo bảng tag -->
+    <changeSet id="009-create-tag-table" author="you">
+        <createTable tableName="tag">
+            <column name="id" type="INT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="name" type="VARCHAR(120)"/>
+            <column name="created_by" type="VARCHAR(120)"/>
+            <column name="created_date" type="DATETIME"/>
+            <column name="updated_by" type="VARCHAR(120)"/>
+            <column name="updated_date" type="DATETIME"/>
+        </createTable>
+    </changeSet>
+
+    <!-- Tạo bảng tag_join -->
+    <changeSet id="010-create-tag_join-table" author="you">
+        <createTable tableName="tag_join">
+            <column name="id" type="INT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="tag_id" type="INT"/>
+            <column name="entity_id" type="INT"/>
+            <column name="type" type="VARCHAR(120)"/>
+            <column name="created_by" type="VARCHAR(120)"/>
+            <column name="created_date" type="DATETIME"/>
+            <column name="updated_by" type="VARCHAR(120)"/>
+            <column name="updated_date" type="DATETIME"/>
+        </createTable>
+    </changeSet>
+
+    <!-- Tạo bảng email -->
+    <changeSet id="011-create-email-table" author="you">
+        <createTable tableName="email">
+            <column name="id" type="INT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="zimbra_id" type="VARCHAR(50)"/>
+            <column name="display_name" type="VARCHAR(120)"/>
+            <column name="org_id" type="INT"/>
+            <column name="mail" type="VARCHAR(120)"/>
+            <column name="created_by" type="VARCHAR(120)"/>
+            <column name="created_date" type="DATETIME"/>
+            <column name="updated_by" type="VARCHAR(120)"/>
+            <column name="updated_date" type="DATETIME"/>
+        </createTable>
+    </changeSet>
+
+    <!-- Tạo bảng distribution list -->
+    <changeSet id="012-create-distribution-list-table" author="you">
+        <createTable tableName="distribution_list">
+            <column name="id" type="INT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="zimbra_id" type="VARCHAR(50)"/>
+            <column name="display_name" type="VARCHAR(120)"/>
+            <column name="mail" type="VARCHAR(120)"/>
+            <column name="created_by" type="VARCHAR(120)"/>
+            <column name="created_date" type="DATETIME"/>
+            <column name="updated_by" type="VARCHAR(120)"/>
+            <column name="updated_date" type="DATETIME"/>
+        </createTable>
+    </changeSet>
+
+    <!-- ChangeSet để thêm FULLTEXT index -->
+    <changeSet id="013-FULLTEXT index-email-table" author="you">
+        <sql>
+            ALTER TABLE email
+                ADD FULLTEXT INDEX idx_fulltext_mail_display_name (mail, display_name);
+        </sql>
+    </changeSet>
+
+    <changeSet id="014-add_type_column_email" author="you">
+        <addColumn tableName="email">
+            <column name="type" type="varchar(10)">
+                <constraints nullable="true"/>
+            </column>
+        </addColumn>
+    </changeSet>
+
+    <!-- ChangeSet để thêm FULLTEXT index -->
+    <changeSet id="015-FULLTEXT index-distribution-list-table" author="you">
+        <sql>
+            ALTER TABLE distribution_list
+                ADD FULLTEXT INDEX idx_fulltext_mail_display_name (mail, display_name);
+        </sql>
+    </changeSet>
+
+    <!-- Tạo bảng email_flow -->
+    <changeSet id="016-create-flow-email-table" author="you">
+        <createTable tableName="flow_email">
+            <column name="id" type="INT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="name" type="VARCHAR(120)"/>
+            <column name="status" type="VARCHAR(120)"/>
+            <column name="start_date" type="DATETIME"/>
+            <column name="start_now" type="BOOLEAN"/>
+            <column name="content" type="LONGTEXT"/>
+            <column name="created_by" type="VARCHAR(120)"/>
+            <column name="created_date" type="DATETIME"/>
+            <column name="updated_by" type="VARCHAR(120)"/>
+            <column name="updated_date" type="DATETIME"/>
+        </createTable>
+    </changeSet>
+    <changeSet id="017-create-flow-email-from-table" author="you">
+        <createTable tableName="flow_email_from">
+            <column name="id" type="INT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="entity_id" type="INT"/>
+            <column name="flow_email_id" type="INT"/>
+            <column name="type" type="VARCHAR(120)"/>
+            <column name="created_by" type="VARCHAR(120)"/>
+            <column name="created_date" type="DATETIME"/>
+            <column name="updated_by" type="VARCHAR(120)"/>
+            <column name="updated_date" type="DATETIME"/>
+        </createTable>
+    </changeSet>
+    <changeSet id="018-create-flow-email-to-table" author="you">
+        <createTable tableName="flow_email_to">
+            <column name="id" type="INT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="entity_id" type="INT"/>
+            <column name="flow_email_id" type="INT"/>
+            <column name="type" type="VARCHAR(120)"/>
+            <column name="created_by" type="VARCHAR(120)"/>
+            <column name="created_date" type="DATETIME"/>
+            <column name="updated_by" type="VARCHAR(120)"/>
+            <column name="updated_date" type="DATETIME"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="019-create-flow-email-approve-table" author="you">
+        <createTable tableName="flow_email_approve">
+            <column name="id" type="INT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="entity_id" type="INT"/>
+            <column name="flow_email_id" type="INT"/>
+            <column name="type" type="VARCHAR(120)"/>
+            <column name="created_by" type="VARCHAR(120)"/>
+            <column name="created_date" type="DATETIME"/>
+            <column name="updated_by" type="VARCHAR(120)"/>
+            <column name="updated_date" type="DATETIME"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="020-mail-user-distribution-list-table" author="you">
+        <createTable tableName="mail_distribution_list">
+            <column name="id" type="INT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="email_id" type="INT"/>
+            <column name="distribution_list_id" type="INT"/>
+            <column name="created_by" type="VARCHAR(120)"/>
+            <column name="created_date" type="DATETIME"/>
+            <column name="updated_by" type="VARCHAR(120)"/>
+            <column name="updated_date" type="DATETIME"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="021-FULLTEXT index-flow-email-table" author="you">
+        <sql>
+            ALTER TABLE flow_email
+                ADD FULLTEXT INDEX idx_fulltext_name (name);
+        </sql>
+    </changeSet>
+
+    <changeSet id="021-FULLTEXT index-organization-table" author="you">
+        <sql>
+            ALTER TABLE organization
+                ADD FULLTEXT INDEX idx_fulltext_name (name);
+        </sql>
+    </changeSet>
+    <changeSet id="022-FULLTEXT index-user-table" author="you">
+        <sql>
+            ALTER TABLE user
+                ADD FULLTEXT INDEX idx_fulltext_username_and_mail (username, mail);
+        </sql>
+    </changeSet>
+</databaseChangeLog>

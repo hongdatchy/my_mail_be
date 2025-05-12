@@ -1,0 +1,51 @@
+package com.vtidc.mymail.config.soap;
+
+import org.springframework.stereotype.Service;
+import org.springframework.ws.client.WebServiceClientException;
+import org.springframework.ws.client.support.interceptor.ClientInterceptor;
+import org.springframework.ws.context.MessageContext;
+import org.springframework.ws.soap.SoapMessage;
+
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.stream.StreamResult;
+
+@Service
+public class SoapLoggerInterceptor implements ClientInterceptor {
+    @Override
+    public boolean handleRequest(MessageContext messageContext) throws WebServiceClientException {
+        try {
+            System.out.println("\n====== SOAP Request ======");
+            SoapMessage soapMessage = (SoapMessage) messageContext.getRequest();
+            Transformer transformer = TransformerFactory.newInstance().newTransformer();
+            transformer.transform(soapMessage.getEnvelope().getSource(), new StreamResult(System.out));
+            System.out.println("\n");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return true;
+    }
+
+    @Override
+    public boolean handleResponse(MessageContext messageContext) throws WebServiceClientException {
+//        try {
+//            System.out.println("\n====== SOAP Response ======");
+//            Transformer transformer = TransformerFactory.newInstance().newTransformer();
+//            transformer.transform(messageContext.getResponse().getPayloadSource(), new StreamResult(System.out));
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+        return true;
+    }
+
+    @Override
+    public boolean handleFault(MessageContext messageContext) {
+        return true;
+    }
+
+    @Override
+    public void afterCompletion(MessageContext messageContext, Exception e) throws WebServiceClientException {
+
+    }
+}
+

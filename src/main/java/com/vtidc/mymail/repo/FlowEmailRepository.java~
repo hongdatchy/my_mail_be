@@ -1,0 +1,89 @@
+package com.vtidc.mymail.repo;
+
+import com.vtidc.mymail.entities.DistributionList;
+import com.vtidc.mymail.entities.Email;
+import com.vtidc.mymail.entities.FlowEmail;
+import com.vtidc.mymail.repo.projection.FlowEmailProjection;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+
+public interface FlowEmailRepository extends JpaRepository<FlowEmail, Integer> {
+
+    @Query(value = """
+                SELECT fe
+                FROM FlowEmail fe
+                LEFT JOIN TagJoin tj ON tj.entityId = fe.id AND tj.type = :typeTag
+                WHERE tj.tagId = :tagId
+            """, countQuery = """
+                SELECT COUNT(fe)
+                FROM FlowEmail fe
+                LEFT JOIN TagJoin tj ON tj.entityId = fe.id AND tj.type = :typeTag
+                WHERE tj.tagId = :tagId
+            """)
+    Page<FlowEmail> findByTagId(String typeTag, Integer tagId, Pageable pageable);
+
+
+    @Query(value = """
+                SELECT
+                    fe.id AS id,
+                    fe.name AS name,
+                    fe.status AS status,
+                    tj.tag_id AS tagId,
+                    fe.start_date AS startDate,
+                    fe.start_now AS startNow,
+                    fe.content AS content,
+                    fef.entity_id AS flowEmailFromEntityId,
+                    fef.type AS flowEmailFromType,
+                    ef.mail AS flowEmailFromEmail,
+                    fet.entity_id AS flowEmailToEntityId,
+                    fet.type AS flowEmailToType,
+                    et.mail AS flowEmailToEmail,
+                    fea.entity_id AS flowEmailApproveEntityId,
+                    fea.type AS flowEmailApproveType,
+                    ea.mail AS flowEmailApproveEmail
+                FROM flow_email fe
+                LEFT JOIN flow_email_from fef ON fe.id = fef.flow_email_id
+                LEFT JOIN email ef ON fef.entity_id = ef.id
+                LEFT JOIN flow_email_to fet ON fe.id = fet.flow_email_id
+                LEFT JOIN email et ON fet.entity_id = et.id
+                LEFT JOIN flow_email_approve fea ON fe.id = fea.flow_email_id
+                LEFT JOIN email ea ON fea.entity_id = ea.id
+                LEFT JOIN tag_join tj ON tj.entity_id = fe.id AND tj.type = :typeTag
+                WHERE fe.id = :id
+            """, nativeQuery = true)
+    List<FlowEmailProjection> findDetailById(Integer id, String typeTag);
+
+
+    @Modifying
+    @Query("UPDATE FlowEmail f SET f.status = :status WHERE f.id = :id")
+    @Transactional
+    void updateStatusById(Integer id, String status);
+
+    @Query(value = """
+                    SELECT fe.* FROM flow_email fe
+                    LEFT JOIN tag_join tj ON tj.entity_id = fe.id AND tj.type = :typeTag
+                    WHERE MATCH(fe.name) AGAINST (:keyword IN BOOLEAN MODE)
+                    AND tj.tag_id = :tagId
+                """,
+            countQuery = """
+                SELECT COUNT(fe.id) FROM flow_email fe
+                LEFT JOIN tag_join tj ON tj.entity_id = fe.id AND tj.type = :typeTag
+                WHERE MATCH(fe.name) AGAINST (:keyword IN BOOLEAN MODE)
+                AND tj.tag_id = :tagId
+                """,
+            nativeQuery = true)
+    Page<FlowEmail> fullTextSearch(String typeTag, String keyword, Integer tagId, Pageable pageable);
+
+    @Query(value = "SELECT * FROM flow_email fe WHERE MATCH(fe.name) AGAINST(?1 IN BOOLEAN MODE)",
+            countQuery = "SELECT count(*) FROM flow_email fe WHERE MATCH(fe.name) AGAINST(?1 IN BOOLEAN MODE)",
+            nativeQuery = true)
+    Page<FlowEmail> fullTextSearch(String keyword, Pageable pageable);
+
+}

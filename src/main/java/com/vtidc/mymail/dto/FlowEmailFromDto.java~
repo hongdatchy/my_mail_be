@@ -1,0 +1,19 @@
+package com.vtidc.mymail.dto;
+
+import com.vtidc.mymail.config.enums.UserType;
+import com.vtidc.mymail.dto.validate.ValueOfEnum;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@NoArgsConstructor
+@AllArgsConstructor
+@Data
+public class FlowEmailFromDto {
+
+    @ValueOfEnum(enumClass = UserType.class)
+    private Integer entityId;
+
+    private String type;
+
+}

@@ -1,0 +1,4 @@
+package com.vtidc.mymail.repo.projection;
+
+public class OrganizationWithEmailDtoProjection {
+}

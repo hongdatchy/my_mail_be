@@ -1,0 +1,39 @@
+package com.vtidc.mymail.entities;
+
+import com.vtidc.mymail.entities.auditing.AbstractAuditingEntity;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.Size;
+import lombok.Getter;
+import lombok.Setter;
+
+import java.time.Instant;
+
+@Getter
+@Setter
+@Entity
+@Table(name = "flow_email")
+public class FlowEmail extends AbstractAuditingEntity {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id", nullable = false)
+    private Integer id;
+
+    @Size(max = 120)
+    @Column(name = "name", length = 120)
+    private String name;
+
+    @Column(name = "start_date")
+    private Instant startDate;
+
+    @Column(name = "start_now")
+    private Boolean startNow;
+
+    @Lob
+    @Column(name = "content")
+    private String content;
+
+    @Size(max = 120)
+    @Column(name = "status", length = 120)
+    private String status;
+
+}

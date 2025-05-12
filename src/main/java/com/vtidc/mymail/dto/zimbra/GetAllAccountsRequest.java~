@@ -1,0 +1,29 @@
+package com.vtidc.mymail.dto;
+
+import jakarta.xml.bind.annotation.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@XmlRootElement(name = "GetAllAccountsRequest", namespace = "urn:zimbraAdmin")
+@XmlAccessorType(XmlAccessType.FIELD)
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+public class GetAllAccountsRequest {
+
+    @XmlElement(name = "domain", namespace = "urn:zimbraAdmin")
+    private Domain domain;
+
+    @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @XmlAccessorType(XmlAccessType.FIELD)
+    public static class Domain {
+        @XmlAttribute(name = "by")
+        private String by;
+
+        @XmlValue
+        private String value;
+    }
+}

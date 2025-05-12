@@ -1,0 +1,22 @@
+package com.vtidc.mymail.dto;
+
+import jakarta.validation.constraints.NotNull;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@NoArgsConstructor
+@AllArgsConstructor
+@Data
+public class EmailDtoForZimbra {
+
+    @NotNull
+    private String zimbraId;
+
+    @NotNull
+    private String displayName;
+
+    @NotNull
+    private String mail;
+
+}

@@ -1,0 +1,29 @@
+package com.vtidc.mymail.dto.zimbra;
+
+import jakarta.xml.bind.annotation.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import java.util.List;
+
+@Data
+@XmlAccessorType(XmlAccessType.FIELD)
+@XmlRootElement(name = "SearchDirectoryResponse", namespace = "urn:zimbraAdmin")
+@NoArgsConstructor
+@AllArgsConstructor
+public class SearchDirectoryResponse {
+
+    @XmlAttribute
+    private int searchTotal;
+
+    @XmlAttribute
+    private boolean more;
+
+    @XmlElement(name = "account", namespace = "urn:zimbraAdmin")
+    private List<Account> accounts;
+
+    @XmlElement(name = "dl", namespace = "urn:zimbraAdmin")
+    private List<DistributionList> distributionLists;
+
+}

@@ -1,0 +1,51 @@
+package com.vtidc.mymail.entities.auditing;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.persistence.Column;
+import jakarta.persistence.EntityListeners;
+import jakarta.persistence.MappedSuperclass;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.CreatedBy;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedBy;
+import org.springframework.data.annotation.LastModifiedDate;
+
+import java.time.Instant;
+
+/**
+ * Base abstract class for entities which will hold definitions for created, last modified by and created,
+ * last modified by date.
+ */
+@MappedSuperclass
+@EntityListeners({CustomAuditingEntityListener.class})
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+public abstract class AbstractAuditingEntity {
+//
+//    @Serial
+//    private static final long serialVersionUID = 1L;
+
+    @CreatedBy
+    @Column(name = "created_by", length = 50, updatable = false)
+//    @JsonIgnore
+    private String createdBy;
+
+    @CreatedDate
+    @Column(name = "created_date", updatable = false)
+//    @JsonIgnore
+    private Instant createdDate = Instant.now();
+
+    @LastModifiedBy
+    @Column(name = "updated_by", length = 50)
+//    @JsonIgnore
+    private String updatedBy;
+
+    @LastModifiedDate
+    @Column(name = "updated_date")
+//    @JsonIgnore
+    private Instant updatedDate = Instant.now();
+
+}
