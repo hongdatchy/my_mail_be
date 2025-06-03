@@ -13,7 +13,7 @@ import lombok.Setter;
 @Table(name = "user_approve_email")
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserApproveEmail extends AbstractAuditingEntity {
+public class UserApproveOrganization extends AbstractAuditingEntity {
     @Id
     @Column(name = "id", nullable = false)
     @GeneratedValue(strategy = GenerationType.IDENTITY)

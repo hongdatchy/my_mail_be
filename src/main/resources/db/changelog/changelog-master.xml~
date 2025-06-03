@@ -63,6 +63,8 @@
         </createTable>
     </changeSet>
 
+    <include file="/db/changelog/changelog-inserts.xml"/>
+
     <!-- Tạo bảng organization -->
     <changeSet id="004-create-org-table" author="you">
         <createTable tableName="organization">
@@ -92,7 +94,7 @@
     </changeSet>
 
 
-    <!-- Tạo bảng user_approve_email (cho duyệt email tổ chức)-->
+    <!-- Tạo bảng user_approve_email (cấu hình người duyệt email đối với người soan flow email)-->
     <changeSet id="005-create-user-approve-email-table" author="you">
         <createTable tableName="user_approve_email">
             <column name="id" type="INT" autoIncrement="true">
@@ -127,7 +129,7 @@
             <column name="updated_date" type="DATETIME"/>
         </createTable>
     </changeSet>
-    
+
     <!-- Tạo bảng tag -->
     <changeSet id="009-create-tag-table" author="you">
         <createTable tableName="tag">
@@ -266,9 +268,8 @@
             <column name="id" type="INT" autoIncrement="true">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
-            <column name="entity_id" type="INT"/>
+            <column name="user_id" type="INT"/>
             <column name="flow_email_id" type="INT"/>
-            <column name="type" type="VARCHAR(120)"/>
             <column name="created_by" type="VARCHAR(120)"/>
             <column name="created_date" type="DATETIME"/>
             <column name="updated_by" type="VARCHAR(120)"/>

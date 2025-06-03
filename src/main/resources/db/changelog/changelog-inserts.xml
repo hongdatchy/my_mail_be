@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
+
+    <changeSet id="007-insert-roles" author="you">
+        <insert tableName="role">
+            <column name="name" value="Danh sách email"/>
+            <column name="code" value="email"/>
+        </insert>
+        <insert tableName="role">
+            <column name="name" value="Nhóm email"/>
+            <column name="code" value="distribution_list"/>
+        </insert>
+        <insert tableName="role">
+            <column name="name" value="Quản lý tài khoản"/>
+            <column name="code" value="account"/>
+        </insert>
+        <insert tableName="role">
+            <column name="name" value="Quản lý email tổ chức"/>
+            <column name="code" value="organization"/>
+        </insert>
+        <insert tableName="role">
+            <column name="name" value="Quản lý luồng email"/>
+            <column name="code" value="flow_email"/>
+        </insert>
+    </changeSet>
+
+    <!-- Insert dữ liệu mẫu cho bảng action -->
+    <changeSet id="008-insert-actions" author="you">
+        <insert tableName="action">
+            <column name="name" value="Tạo"/>
+            <column name="code" value="create"/>
+            <column name="role_id" value="1"/>
+        </insert>
+        <insert tableName="action">
+            <column name="name" value="Xem"/>
+            <column name="code" value="view"/>
+            <column name="role_id" value="1"/>
+        </insert>
+        <insert tableName="action">
+            <column name="name" value="Chỉnh sửa"/>
+            <column name="code" value="update"/>
+            <column name="role_id" value="1"/>
+        </insert>
+        <insert tableName="action">
+            <column name="name" value="Xoá"/>
+            <column name="code" value="delete"/>
+            <column name="role_id" value="1"/>
+        </insert>
+        <insert tableName="action">
+            <column name="name" value="Tạo"/>
+            <column name="code" value="create"/>
+            <column name="role_id" value="2"/>
+        </insert>
+        <insert tableName="action">
+            <column name="name" value="Xem"/>
+            <column name="code" value="view"/>
+            <column name="role_id" value="2"/>
+        </insert>
+        <insert tableName="action">
+            <column name="name" value="Chỉnh sửa"/>
+            <column name="code" value="update"/>
+            <column name="role_id" value="2"/>
+        </insert>
+        <insert tableName="action">
+            <column name="name" value="Xoá"/>
+            <column name="code" value="delete"/>
+            <column name="role_id" value="2"/>
+        </insert>
+        <insert tableName="action">
+            <column name="name" value="Tạo"/>
+            <column name="code" value="create"/>
+            <column name="role_id" value="3"/>
+        </insert>
+        <insert tableName="action">
+            <column name="name" value="Xem"/>
+            <column name="code" value="view"/>
+            <column name="role_id" value="3"/>
+        </insert>
+        <insert tableName="action">
+            <column name="name" value="Chỉnh sửa"/>
+            <column name="code" value="update"/>
+            <column name="role_id" value="3"/>
+        </insert>
+        <insert tableName="action">
+            <column name="name" value="Xoá"/>
+            <column name="code" value="delete"/>
+            <column name="role_id" value="3"/>
+        </insert>
+        <insert tableName="action">
+            <column name="name" value="Xem"/>
+            <column name="code" value="view"/>
+            <column name="role_id" value="4"/>
+        </insert>
+        <insert tableName="action">
+            <column name="name" value="Phê duyệt"/>
+            <column name="code" value="approve"/>
+            <column name="role_id" value="4"/>
+        </insert>
+        <insert tableName="action">
+            <column name="name" value="Tạo"/>
+            <column name="code" value="create"/>
+            <column name="role_id" value="5"/>
+        </insert>
+        <insert tableName="action">
+            <column name="name" value="Xem"/>
+            <column name="code" value="view"/>
+            <column name="role_id" value="5"/>
+        </insert>
+<!--        <insert tableName="action">-->
+<!--            <column name="name" value="Chỉnh sửa"/>-->
+<!--            <column name="code" value="update"/>-->
+<!--            <column name="role_id" value="5"/>-->
+<!--        </insert>-->
+<!--        <insert tableName="action">-->
+<!--            <column name="name" value="Xoá"/>-->
+<!--            <column name="code" value="delete"/>-->
+<!--            <column name="role_id" value="5"/>-->
+<!--        </insert>-->
+    </changeSet>
+
+
+</databaseChangeLog>
